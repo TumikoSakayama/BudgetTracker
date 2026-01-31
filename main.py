@@ -3,21 +3,26 @@ from category import Category
 from transaction import Transaction
 
 if __name__ == "__main__":
-    # Initialize Budget Tracker with a starting balance of $1000
-    budget_tracker = BudgetTracker(1000)
+    
+    while True:
+        print("Welcome to the Budget Tracker (terminal version)")
+        print("================================================")
+        print("Please select the task that you want to complete (1-3)")
+        print("1. Add a new category")
+        print("2. Add a new money movement")
+        print("3. Show Total Balance")
+        print("4. Exit the menu")
+        option = input("Input your option: ")
 
-    # Add categories
-    food_category = budget_tracker.add_category("Food")
-    entertainment_category = budget_tracker.add_category("Entertainment")
-
-    # Add transactions to Food category
-    budget_tracker.add_transaction(food_category, 150, "Groceries", "expense")
-    budget_tracker.add_transaction(food_category, 50, "Dining Out", "expense")
-    budget_tracker.add_transaction(food_category, 200, "Salary Bonus", "income")
-
-    # Add transactions to Entertainment category
-    budget_tracker.add_transaction(entertainment_category, 100, "Concert Ticket", "expense")
-    budget_tracker.add_transaction(entertainment_category, 300, "Freelance Project", "income")
-
-    # View balances
-    budget_tracker.view_balance()
+        if option == '1':
+            print("Here we will add categories to the tracker")
+        elif option == '2':
+            print("Here we add transactions")
+        elif option == '3':
+            print("We will calculate the total based on transactions")
+        elif option == '4':
+            print("Bye Bye!")
+            break
+        else:
+            print("Wrong option retard")
+            break
