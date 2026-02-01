@@ -39,7 +39,7 @@ if __name__ == "__main__":
             print(tracker)
         elif option == '3':
             print("We will calculate the total based on transactions")
-            tracker.view_balance()
+            print(tracker.view_balance())
             print("===============================================")
         elif option == '4':
             print("Bye Bye!")
