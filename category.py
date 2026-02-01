@@ -7,9 +7,9 @@ class Category:
         self.expense_transactions = []
 
     def add_transaction(self, amount, name, transaction_type):
-        if transaction_type == 'income':
+        if transaction_type.lower() == 'income':
             self.income_transactions.append(Transaction(amount, name))
-        elif transaction_type == 'expense':
+        elif transaction_type.lower() == 'expense':
             self.expense_transactions.append(Transaction(amount, name))
         else:
             print("Invalid transaction type. Please enter 'income' or 'expense'.")
