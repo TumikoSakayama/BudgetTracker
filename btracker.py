@@ -1,4 +1,5 @@
 from category import Category
+import csv
 
 class BudgetTracker:
     def __init__(self, balance):
@@ -58,3 +59,29 @@ class BudgetTracker:
 
     def __str__(self):
         return self.view_balance()
+
+    def save_to_csv(self, filename):
+        if not filename.endswith('.csv'):
+            filename += '.csv'
+        
+        try:
+            with open(filename, mode='w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(["INITIAL_BALANCE", self.balance])
+
+                for category in self.categories:
+                    all_trans = [
+                        (t, 'income') for t in category.income_transactions
+                    ] + [
+                        (t, 'expense') for t in category.expense_transactions
+                    ]
+                    for trans_obj, t_type in all_trans:
+                        writer.writerow([
+                            category.name,
+                            trans_obj.amount,
+                            trans_obj.name,
+                            t_type
+                        ])
+            print(f"Transaction added successfully to {filename}!")
+        except Exception as e:
+            print(f"Error adding the transaction: {e}")
