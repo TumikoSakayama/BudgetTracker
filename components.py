@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from datetime import datetime
 
-class Sidebar(self):
+class Sidebar(ctk.CTkFrame):
     def __init__(self, master, callbacks):
         super().__init__(master, width=200, corner_radius=0)
         self.callbacks = callbacks
@@ -60,7 +60,7 @@ class Sidebar(self):
     def update_file_label(self):
         self.file_label.configure(text=f"File: {filename}")
 
-class TransactionForm:
+class TransactionForm(ctk.CTkFrame):
     def __init__(self, master, add_callback):
         super().__init__(master)
 
@@ -134,4 +134,102 @@ class TransactionForm:
     def enable_add_button(self):
         self.add_btn.configure(state="normal")
 
-        
+class TransactionDisplay(ctk.CTkFrame):
+    def __init__(self, master):
+        super().__init__(master)
+
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(1, weight=1)
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        self.summary_frame =ctk.CTkFrame(self)
+        self.summary_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+        self.summary_frame.grid_columnconfigure((0,1, 2), weight=1)
+
+        self.total_income_label = ctk.CTkLabel(
+            self,
+            text="Total Income: $0.00",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color="green"
+        )
+        self.total_income_label.grid(row=0, column=0, padx=10, pady=10)
+
+        self.total_expense_label = ctk.CTkLabel(
+            self,
+            text="Total Expense: $0.00",
+            font=ctk.CTkFont(size=14, weight="bold"),
+            text_color="red"
+        )
+        self.total_expense_label.grid(row=0, column=1, padx=10, pady=10)
+
+        self.balance_label = ctk.CTkLabel(
+            self.summary_frame,
+            text="Balance: $0.00",
+            font=ctk.CTkFont(size=14, weight="bold")
+        )
+        self.balance_label.grid(row-0, column=2, padx=10, pady=10)
+
+        self.scrollable_frame = ctk.CTkScrollableFrame(self)
+        self.scrollable_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.scrollable_frame.grid_columnconfigure(0, weight=1)
+
+        self.create_header()
+
+    def create_header(self):
+        header_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="gray25")
+        header_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
+        header_frame.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+
+        headers = ['Date', 'Category', 'Description', 'Amount', 'Type']
+        for i, header in enumerate(headers):
+            label = ctk.CTkLabel(
+                header_frame,
+                text=header,
+                font=ctk.CTkFont(size=13, weight="bold")
+            )
+            label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+
+    def update_transactions(self, transactions):
+        for widget in self.scrollable_frame.winfo_children()[1:]:
+            widget.destroy()
+
+        for i, transactions in enumerate(transactions, start=1):
+            trans_frame =ctk.CTkFrame(
+                self.scrollable_frame,
+                fg_color="gray30" if i % 2 == 0 else "gray20"
+            )
+            trans_frame.grid(row=1, column=0, sticky="ew", padx=5. pady=2)
+            trans_frame.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+
+            amount = float(transaction['Amount'])
+            amount_color = "green" if transaction['Type'] == 'Income' else "red"
+
+            ctk.CTkLabel(trans_frame, text=transaction['Date']).grid(
+                row=0, column=0, padx=10, pady=0, sticky="w"
+            )
+
+            ctk.CTkLabel(trans_frame, text=transaction['Category']).grid(
+                row=0, column=1, padx=10, pady=0, sticky="w"
+            )
+
+            ctk.CTkLabel(trans_frame, text=transaction['Description']).grid(
+                row=0, column=2, padx=10, pady=0, sticky="w"
+            )
+
+            ctk.CTkLabel(trans_frame, text=f"{amount:.2f}", text_color=amount_color).grid(
+                row=0, column=3, padx=10, pady=0, sticky="w"
+            )
+
+            ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
+                row=0, column=4, padx=10, pady=0, sticky="w"
+            )
+
+    def update_summary(self, total_expense, total_income, balance):
+        self.total_income_label.configure(text=f"Total Income: ${total_income:.2f}")
+        self.total_expense_label.configure(text=f"Total Income: ${total_expense:.2f}")
+        self.balance_label.configure(
+            text=f"Total Balance: ${balance:.2f}",
+            text_color="green" if balance >=0 else "red"
+        )
