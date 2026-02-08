@@ -70,6 +70,9 @@ class FileHandler:
         return True, "Transaction added successfully"
 
     def get_transactions(self):
+        return self.transactions
+
+    def calculate_totals(self):
         total_income = 0
         total_expense = 0
 

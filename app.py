@@ -63,4 +63,57 @@ class BudgetTrackerApp(ctk.CTk):
             else:
                 messagebox.showerror("Error", f"Failed to create file: {result}")
 
-    
+    def load_existing_file(self):
+        file_path = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes = [("CSV files", ".csv"), ("All files", "*.*")]
+        )
+
+        if file_path:
+            success, *result = self.file_handler.load_file(file_path)
+
+            if success:
+                count, filename = result
+                self.sidebar.update_file_label(filename)
+                self.form.enable_add_button()
+                self.sidebar.enable_save()
+                self.form.refresh_transaction_view()
+                messagebox.showinfo("Success", f"Loaded {count} transactions!")
+            else:
+                messagebox.showerror("Error", f"Failed to load file: {result}")
+
+    def add_transaction(self, data):
+        if not self.file_handler.get_current_file():
+            messagebox.showwarning("Warning", "Please create or load an existing file!")
+
+        success, message = self.file_handler.add_transaction(
+            data['date'],
+            data['category'],
+            data['description'],
+            data['amount'],
+            data['type']
+        )
+
+        if success:
+            self.form.clear_form()
+            self.refresh_transaction_view()
+            messagebox.showinfo("Success", message)
+        else:
+            messagebox.showerror("Error", message)
+
+    def save_file(self):
+        success, message = self.file_handler.save_file()
+
+        if success:
+            messagebox.showinfo("Success", message)
+        else:
+            messagebox.showerror("Error", message)
+
+    def refresh_transaction_view(self):
+        transactions = self.file_handler.get_transactions()
+        self.display.update_transactions(transactions)
+
+        total_income, total_expense, balance = self.file_handler.calculate_totals()
+        self.display.update_summary(total_income, total_expense, balance)
+
+        
