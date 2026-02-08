@@ -55,9 +55,9 @@ class Sidebar(ctk.CTkFrame):
         self.file_label.grid(row=7, column=0, padx=20, pady=(0, 20))
 
     def enable_save(self):
-        self.save_file_btn(state='normal')
+        self.save_file_btn.configure(state='normal')
 
-    def update_file_label(self):
+    def update_file_label(self, filename):
         self.file_label.configure(text=f"File: {filename}")
 
 class TransactionForm(ctk.CTkFrame):
@@ -82,15 +82,15 @@ class TransactionForm(ctk.CTkFrame):
         self.date_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
         self.date_entry.insert(0, datetime.now().strftime("%m-%d-%Y"))
 
-        ctk.CTkLabel(self, text="Category").grid(row=1, column=, padx=5, pady=5, sticky="e")
+        ctk.CTkLabel(self, text="Category").grid(row=1, column=2, padx=5, pady=5, sticky="e")
         self.cat_entry = ctk.CTkEntry(self, placeholder_text="e.g. Food, Transport")
         self.cat_entry.grid(row=1, column=3, padx=5, pady=5, sticky="ew")
 
-        ctk.CTkLabel(self, text="Description").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        ctk.CTkLabel(self, text="Description").grid(row=2, column=0, padx=5, pady=5, sticky="e")
         self.desc_entry = ctk.CTkEntry(self, placeholder_text="Transaction description")
-        self.cat_entry.grid(row=2, column=1, columnspan=3, padx=5, pady=5, sticky="ew")
+        self.desc_entry.grid(row=2, column=1, columnspan=3, padx=5, pady=5, sticky="ew")
 
-        ctk.CTkLabel(self, text="Date").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        ctk.CTkLabel(self, text="Amount").grid(row=3, column=0, padx=5, pady=5, sticky="e")
         self.amount_entry = ctk.CTkEntry(self, placeholder_text="0.00")
         self.amount_entry.grid(row=3, column=1, padx=5, pady=5, sticky="ew")
 
@@ -116,19 +116,19 @@ class TransactionForm(ctk.CTkFrame):
         self.add_callback(data)
 
     def get_form_data(self):
-        return = {
-            'date': self.date_entry.get().strip(),
-            'category': self.cat_entry.get().strip(),
-            'description': self.desc_entry.get().strip(),
-            'amount': self.amount_entry.get().strip(),
-            'type': self.type_var.get()
+        return {
+            'Date': self.date_entry.get().strip(),
+            'Category': self.cat_entry.get().strip(),
+            'Description': self.desc_entry.get().strip(),
+            'Amount': self.amount_entry.get().strip(),
+            'Type': self.type_var.get()
         }
     
     def clear_form(self):
         self.date_entry.delete(0, 'end')
-        self.date_entry.insert(0, datetime.now().strftime("%Y-%m-%d"))
-        self.category_entry.delete(0, 'end')
-        self.description_entry.delete(0, 'end')
+        self.date_entry.insert(0, datetime.now().strftime("%m-%d-Y"))
+        self.cat_entry.delete(0, 'end')
+        self.desc_entry.delete(0, 'end')
         self.amount_entry.delete(0, 'end')
     
     def enable_add_button(self):
@@ -169,7 +169,7 @@ class TransactionDisplay(ctk.CTkFrame):
             text="Balance: $0.00",
             font=ctk.CTkFont(size=14, weight="bold")
         )
-        self.balance_label.grid(row-0, column=2, padx=10, pady=10)
+        self.balance_label.grid(row=0, column=2, padx=10, pady=10)
 
         self.scrollable_frame = ctk.CTkScrollableFrame(self)
         self.scrollable_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
@@ -192,15 +192,16 @@ class TransactionDisplay(ctk.CTkFrame):
             label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
 
     def update_transactions(self, transactions):
-        for widget in self.scrollable_frame.winfo_children()[1:]:
-            widget.destroy()
+        for widget in self.scrollable_frame.winfo_children():
+            if widget.cget("fg_color") != "gray25":
+                widget.destroy()
 
-        for i, transactions in enumerate(transactions, start=1):
+        for i, transaction in enumerate(transactions, start=1):
             trans_frame =ctk.CTkFrame(
                 self.scrollable_frame,
                 fg_color="gray30" if i % 2 == 0 else "gray20"
             )
-            trans_frame.grid(row=1, column=0, sticky="ew", padx=5. pady=2)
+            trans_frame.grid(row=i+1, column=0, sticky="ew", padx=5, pady=2)
             trans_frame.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 
             amount = float(transaction['Amount'])

@@ -23,22 +23,22 @@ class FileHandler:
         try:
             self.transactions = []
             with open(file_path, 'r', newline='') as file:
-                reader = csv.reader(file)
+                reader = csv.DictReader(file)
                 for row in reader:
-                    self.transactions.append(reader)
+                    self.transactions.append(row)
             
             self.current_file = file_path
             return True, len(self.transactions), os.path.basename(file_path)
         except Exception as e:
-            raise False, str(e)
+            return False, str(e)
 
 
-    def save_file(self, file_path):
+    def save_file(self):
         if not self.current_file:
             return False, "No File to Save!"
 
         try:
-            with open(file_path, 'w', newline='') as file:
+            with open(self.current_file, 'w', newline='') as file:
                 writer = csv.DictWriter(
                     file,
                     fieldnames= ['Date', 'Category', 'Description', 'Amount', 'Type']
@@ -47,22 +47,22 @@ class FileHandler:
                 writer.writerows(self.transactions)
             return True ,"File save successfully"
         except Exception as e:
-            raise False, str(e)
+            return False, str(e)
 
-    def add_transaction(self, date, category_name, description, amount, t_ype):
+    def add_transaction(self, date, category_name, description, amount, t_type):
         if not all([date, category_name, description, amount]):
             return False, "Please fill in all the details!"
 
         try:
             float(amount)
         except ValueError:
-            raise False, "Amount must be a number"
+            return False, "Amount must be a number"
 
         transaction = {
             'Date':date,
             'Category':category_name,
             'Description':description,
-            'Amount',amount,
+            'Amount':str(amount),
             'Type':t_type
         }
 
@@ -73,10 +73,10 @@ class FileHandler:
         return self.transactions
 
     def calculate_totals(self):
-        total_income = 0
-        total_expense = 0
+        total_income = 0.0
+        total_expense = 0.0
 
-        for transaction in transactions:
+        for transaction in self.transactions:
             amount = float(transaction['Amount'])
             if transaction['Type'] == 'Income' :
                 total_income += amount
@@ -84,7 +84,7 @@ class FileHandler:
                 total_expense += amount
 
         balance = total_income - total_expense
-        return total_income, total_expense
+        return total_income, total_expense, balance
 
     def get_current_file(self):
         return self.current_file

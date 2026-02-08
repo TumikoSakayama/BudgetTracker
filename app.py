@@ -24,14 +24,14 @@ class BudgetTrackerApp(ctk.CTk):
 
     def create_components(self):
         sidebar_callbacks = {
-            'new_file': self.create_new_file:
+            'new_file': self.create_new_file,
             'load_file': self.load_existing_file,
             'save_file': self.save_file,
             'refresh': self.refresh_transaction_view
         }
 
         self.sidebar = Sidebar(self, sidebar_callbacks)
-        self.sidebar_callbacks.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar.grid(row=0, column=0, rowspan=4, sticky="nsew")
 
         self.main_frame = ctk.CTkFrame(self, corner_radius=0)
         self.main_frame.grid(row=0, column=1, sticky='nsew', padx=10, pady=10)
@@ -39,7 +39,7 @@ class BudgetTrackerApp(ctk.CTk):
         self.main_frame.grid_rowconfigure(1, weight=1)
 
         self.form = TransactionForm(self.main_frame, self.add_transaction)
-        self.from.grid(row=0, column=0, sticky='ew', padx=10, pady=(10, 5))
+        self.form.grid(row=0, column=0, sticky='ew', padx=10, pady=(10, 5))
 
         self.display = TransactionDisplay(self.main_frame)
         self.display.grid(row=1, column=0, sticky='nsew', padx=10, pady=(5, 10))
@@ -51,11 +51,10 @@ class BudgetTrackerApp(ctk.CTk):
         )
 
         if file_path:
-            success, result = self.file_handler.create_new_file(file_path)
+            success, result = self.file_handler.new_file(file_path)
 
             if success:
-                count, filename = result
-                self.sidebar.update_file_label(label)
+                self.sidebar.update_file_label(result)
                 self.form.enable_add_button()
                 self.sidebar.enable_save()
                 self.refresh_transaction_view()
@@ -64,7 +63,7 @@ class BudgetTrackerApp(ctk.CTk):
                 messagebox.showerror("Error", f"Failed to create file: {result}")
 
     def load_existing_file(self):
-        file_path = filedialog.asksaveasfilename(
+        file_path = filedialog.askopenfilename(
             defaultextension=".csv",
             filetypes = [("CSV files", ".csv"), ("All files", "*.*")]
         )
@@ -77,7 +76,7 @@ class BudgetTrackerApp(ctk.CTk):
                 self.sidebar.update_file_label(filename)
                 self.form.enable_add_button()
                 self.sidebar.enable_save()
-                self.form.refresh_transaction_view()
+                self.refresh_transaction_view()
                 messagebox.showinfo("Success", f"Loaded {count} transactions!")
             else:
                 messagebox.showerror("Error", f"Failed to load file: {result}")
@@ -87,11 +86,11 @@ class BudgetTrackerApp(ctk.CTk):
             messagebox.showwarning("Warning", "Please create or load an existing file!")
 
         success, message = self.file_handler.add_transaction(
-            data['date'],
-            data['category'],
-            data['description'],
-            data['amount'],
-            data['type']
+            data['Date'],
+            data['Category'],
+            data['Description'],
+            data['Amount'],
+            data['Type']
         )
 
         if success:
