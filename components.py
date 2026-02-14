@@ -293,7 +293,7 @@ class TransactionDisplay(ctk.CTkFrame):
 
     def delete_transaction(self, transaction):
         file_handler = self.master.master.file_handler
-        file_handler.transaction..remove(transaction)
+        file_handler.transaction.remove(transaction)
         self.update_transactions(file_handler.get_transactions())
 
         total_income, total_expense, balance = file_handler.calculate_totals()
