@@ -182,9 +182,9 @@ class TransactionDisplay(ctk.CTkFrame):
     def create_header(self):
         header_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="gray25")
         header_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
-        header_frame.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+        header_frame.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
-        headers = ['Date', 'Category', 'Description', 'Amount', 'Type']
+        headers = ['Date', 'Category', 'Description', 'Amount', 'Type', 'Actions']
         for i, header in enumerate(headers):
             if header == "Amount":
                 sticky_value = "e"
@@ -220,7 +220,8 @@ class TransactionDisplay(ctk.CTkFrame):
                 fg_color="gray30" if i % 2 == 0 else "gray20"
             )
             trans_frame.grid(row=i, column=0, sticky="ew", padx=5, pady=2)
-            trans_frame.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
+            for col in range(6):
+                trans_frame.grid_columnconfigure(col, weight=1)
 
             amount = float(transaction['Amount'])
             amount_color = "green" if transaction['Type'] == 'Income' else "red"
@@ -242,11 +243,11 @@ class TransactionDisplay(ctk.CTkFrame):
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
-                row=0, column=4, padx=10, pady=0, sticky="nsew"
+                row=0, column=4, padx=10, pady=0, sticky="ew"
             )
 
             action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
-            action_frame.grid(row=0, column=5)
+            action_frame.grid(row=0, column=5, sticky="ew")
 
             edit_btn = ctk.CTkButton(
                 action_frame,
