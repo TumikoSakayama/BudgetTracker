@@ -182,14 +182,19 @@ class TransactionDisplay(ctk.CTkFrame):
     def create_header(self):
         header_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="gray25")
         header_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
-        header_frame.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
+        header_frame.grid_columnconfigure(0, weight=1)
+        header_frame.grid_columnconfigure(1, weight=1)
+        header_frame.grid_columnconfigure(2, weight=2)
+        header_frame.grid_columnconfigure(3, weight=0, minsize=120)
+        header_frame.grid_columnconfigure(4, weight=0, minsize=100)
+        header_frame.grid_columnconfigure(5, weight=0, minsize=120)
 
         headers = ['Date', 'Category', 'Description', 'Amount', 'Type', 'Actions']
         for i, header in enumerate(headers):
             if header == "Amount":
                 sticky_value = "e"
             elif header == "Type":
-                sticky_value = "ew"
+                sticky_value = "nsew"
             else:
                 sticky_value = "w"
 
@@ -221,7 +226,12 @@ class TransactionDisplay(ctk.CTkFrame):
             )
             trans_frame.grid(row=i, column=0, sticky="ew", padx=5, pady=2)
             for col in range(6):
-                trans_frame.grid_columnconfigure(col, weight=1)
+                trans_frame.grid_columnconfigure(0, weight=1)
+                trans_frame.grid_columnconfigure(1, weight=1)
+                trans_frame.grid_columnconfigure(2, weight=2)
+                trans_frame.grid_columnconfigure(3, weight=0, minsize=120)
+                trans_frame.grid_columnconfigure(4, weight=0, minsize=100)
+                trans_frame.grid_columnconfigure(5, weight=0, minsize=120)
 
             amount = float(transaction['Amount'])
             amount_color = "green" if transaction['Type'] == 'Income' else "red"
@@ -238,40 +248,44 @@ class TransactionDisplay(ctk.CTkFrame):
                 row=0, column=2, padx=10, pady=0, sticky="w"
             )
 
-            ctk.CTkLabel(trans_frame, text=f"{amount:.2f}", text_color=amount_color).grid(
+            ctk.CTkLabel(trans_frame, text=f"{amount:,.2f}", text_color=amount_color).grid(
                 row=0, column=3, padx=10, pady=0, sticky="e"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
-                row=0, column=4, padx=10, pady=0, sticky="ew"
+                row=0, column=4, padx=10, pady=0, sticky="nsew"
             )
 
             action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
-            action_frame.grid(row=0, column=5, sticky="ew")
+            action_frame.grid(row=0, column=5, sticky="nsew")
 
             edit_btn = ctk.CTkButton(
                 action_frame,
-                text="Edit",
-                width=50,
+                text="✏",
+                width=30,
+                height=28,
+                fg_color="transparent",
+                hover_color="gray35",
                 command= lambda t=transaction: self.edit_transaction(t)
             )
             edit_btn.pack(side="left", padx=5)
 
             del_btn = ctk.CTkButton(
                 action_frame,
-                text="Delete",
-                width=60,
-                fg_color="darkred",
-                hover_color="red",
+                text="🗑",
+                width=30,
+                height=28,
+                fg_color="transparent",
+                hover_color="#8B0000",
                 command= lambda t=transaction: self.delete_transaction(t)
             )
             del_btn.pack(side="left")
 
     def update_summary(self, total_income, total_expense, balance):
-        self.total_income_label.configure(text=f"Total Income: ${total_income:.2f}")
-        self.total_expense_label.configure(text=f"Total Expense: ${total_expense:.2f}")
+        self.total_income_label.configure(text=f"Total Income: ${total_income:,.2f}")
+        self.total_expense_label.configure(text=f"Total Expense: ${total_expense:,.2f}")
         self.balance_label.configure(
-            text=f"Total Balance: ${balance:.2f}",
+            text=f"Total Balance: ${balance:,.2f}",
             text_color="green" if balance >=0 else "red"
         )
 
