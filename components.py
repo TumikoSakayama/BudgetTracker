@@ -226,15 +226,15 @@ class TransactionDisplay(ctk.CTkFrame):
             amount_color = "green" if transaction['Type'] == 'Income' else "red"
 
             ctk.CTkLabel(trans_frame, text=transaction['Date']).grid(
-                row=0, column=0, padx=10, pady=0, sticky="e"
+                row=0, column=0, padx=10, pady=0, sticky="w"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Category']).grid(
-                row=0, column=1, padx=10, pady=0, sticky="e"
+                row=0, column=1, padx=10, pady=0, sticky="w"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Description']).grid(
-                row=0, column=2, padx=10, pady=0, sticky="e"
+                row=0, column=2, padx=10, pady=0, sticky="w"
             )
 
             ctk.CTkLabel(trans_frame, text=f"{amount:.2f}", text_color=amount_color).grid(
@@ -242,7 +242,7 @@ class TransactionDisplay(ctk.CTkFrame):
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
-                row=0, column=4, padx=10, pady=0, sticky="ew"
+                row=0, column=4, padx=10, pady=0, sticky="nsew"
             )
 
             action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
