@@ -228,7 +228,7 @@ class TransactionDisplay(ctk.CTkFrame):
             for col in range(6):
                 trans_frame.grid_columnconfigure(0, weight=1)
                 trans_frame.grid_columnconfigure(1, weight=1)
-                trans_frame.grid_columnconfigure(2, weight=2)
+                trans_frame.grid_columnconfigure(2, weight=3)
                 trans_frame.grid_columnconfigure(3, weight=0, minsize=120)
                 trans_frame.grid_columnconfigure(4, weight=0, minsize=100)
                 trans_frame.grid_columnconfigure(5, weight=0, minsize=120)
@@ -245,15 +245,15 @@ class TransactionDisplay(ctk.CTkFrame):
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Description']).grid(
-                row=0, column=2, padx=10, pady=0, sticky="w"
+                row=0, column=2, padx=10, pady=0, sticky="ew"
             )
 
             ctk.CTkLabel(trans_frame, text=f"{amount:,.2f}", text_color=amount_color).grid(
-                row=0, column=3, padx=(0, 15), pady=0, sticky="ne"
+                row=0, column=3, padx=10, pady=0, sticky="e"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
-                row=0, column=4, padx=10, pady=0, sticky="nsew"
+                row=0, column=4, padx=10, pady=0, sticky="w"
             )
 
             action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
