@@ -137,6 +137,8 @@ class TransactionForm(ctk.CTkFrame):
 class TransactionDisplay(ctk.CTkFrame):
     def __init__(self, master):
         super().__init__(master)
+        self.sort_column = None
+        self.sort_reverse = False
 
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -184,12 +186,21 @@ class TransactionDisplay(ctk.CTkFrame):
 
         headers = ['Date', 'Category', 'Description', 'Amount', 'Type']
         for i, header in enumerate(headers):
-            label = ctk.CTkLabel(
-                header_frame,
-                text=header,
-                font=ctk.CTkFont(size=13, weight="bold")
-            )
-            label.grid(row=0, column=i, padx=10, pady=10, sticky="w")
+            if headers != "Actions":
+                btn = ctk.CTkButton(
+                    header_frame,
+                    text=header,
+                    fg_color="transparent",
+                    hover=False,
+                    command= lambda h=header: self.sort_columns(h)
+                )
+                btn.grid(row=0, column=i, padx=10, pady=10, sticky="w")
+            else:
+                ctk.CTkLabel(
+                    header_frame,
+                    text=header,
+                    font=ctk.CTkFont(size=13, weight="bold")
+                ).grid(row=0, column=i, padx=10, pady=10, sticky="w")
 
     def update_transactions(self, transactions):
         for widget in self.scrollable_frame.winfo_children():
@@ -201,7 +212,7 @@ class TransactionDisplay(ctk.CTkFrame):
                 self.scrollable_frame,
                 fg_color="gray30" if i % 2 == 0 else "gray20"
             )
-            trans_frame.grid(row=i+1, column=0, sticky="ew", padx=5, pady=2)
+            trans_frame.grid(row=i, column=0, sticky="ew", padx=5, pady=2)
             trans_frame.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
 
             amount = float(transaction['Amount'])
@@ -227,6 +238,25 @@ class TransactionDisplay(ctk.CTkFrame):
                 row=0, column=4, padx=10, pady=0, sticky="w"
             )
 
+            action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
+            action_frame.grid(row=0, column=5)
+
+            edit_btn = ctk.CTkButton(
+                action_frame,
+                text="Edit",
+                width=50,
+                command= lambda t=transaction: self.edit_transaction(t)
+            )
+
+            del_btn = ctk.CTkButton(
+                action_frame,
+                text="Delete",
+                width=60,
+                color="darkred",
+                hover_color="red",
+                command= lambda t=transaction: self.delete_transaction(t)
+            )
+
     def update_summary(self, total_income, total_expense, balance):
         self.total_income_label.configure(text=f"Total Income: ${total_income:.2f}")
         self.total_expense_label.configure(text=f"Total Expense: ${total_expense:.2f}")
@@ -234,3 +264,56 @@ class TransactionDisplay(ctk.CTkFrame):
             text=f"Total Balance: ${balance:.2f}",
             text_color="green" if balance >=0 else "red"
         )
+
+    def sort_columns(self, column):
+        if self.sort_column == column:
+            self.sort_reverse = not self.sort_reverse
+        else:
+            self.sort_reverse = False
+
+        self.sort_column = column
+
+        try:
+            if column == "Amount":
+                self.master.master.file_handler.transactions.sort(
+                    key=lambda x: float(x[column]),
+                    reverse = self.sort_reverse
+                )
+            else:
+                self.master.master.file_handler.transactions.sort(
+                    key= lambda x: x[column],
+                    reverse = self.sort_reverse
+                )
+        except Exception:
+            pass
+
+        self.update_transactions(
+            self.master.master.file_handler.get_transactions()
+        )
+
+    def delete_transaction(self, transaction):
+        file_handler = self.master.master.file_handler
+        file_handler.transaction..remove(transaction)
+        self.update_transactions(file_handler.get_transactions())
+
+        total_income, total_expense, balance = file_handler.calculate_totals()
+        self.update_transactions(total_income, total_expense, balance)
+
+    def edit_transaction(self, transaction):
+        form = self.master.master.form
+
+        form.date_entry.delete(0, "end")
+        form.date_entry.insert(0, transaction["Date"])
+
+        form.cat_entry.delete(0, "end")
+        form.cat_entry.insert(0, transaction["Category"])
+
+        form.desc_entry.delete(0, "end")
+        form.desc_entry.index(0, transaction["Description"])
+
+        form.amount_entry.delete(0, "end")
+        form.amount_entry.insert(0, transaction["Amount"])
+
+        form.type_var.set(transaction["Type"])
+
+        self.delete_transaction(transaction)
