@@ -186,6 +186,13 @@ class TransactionDisplay(ctk.CTkFrame):
 
         headers = ['Date', 'Category', 'Description', 'Amount', 'Type']
         for i, header in enumerate(headers):
+            if header == "Amount":
+                sticky_value = "e"
+            elif header == "Type":
+                sticky_value = "ew"
+            else:
+                sticky_value = "w"
+
             if header != "Actions":
                 btn = ctk.CTkButton(
                     header_frame,
@@ -194,7 +201,7 @@ class TransactionDisplay(ctk.CTkFrame):
                     hover=False,
                     command= lambda h=header: self.sort_columns(h)
                 )
-                btn.grid(row=0, column=i, padx=10, pady=10, sticky="w")
+                btn.grid(row=0, column=i, padx=10, pady=10, sticky=sticky_value)
             else:
                 ctk.CTkLabel(
                     header_frame,
@@ -219,23 +226,23 @@ class TransactionDisplay(ctk.CTkFrame):
             amount_color = "green" if transaction['Type'] == 'Income' else "red"
 
             ctk.CTkLabel(trans_frame, text=transaction['Date']).grid(
-                row=0, column=0, padx=10, pady=0, sticky="w"
+                row=0, column=0, padx=10, pady=0, sticky="e"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Category']).grid(
-                row=0, column=1, padx=10, pady=0, sticky="w"
+                row=0, column=1, padx=10, pady=0, sticky="e"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Description']).grid(
-                row=0, column=2, padx=10, pady=0, sticky="w"
+                row=0, column=2, padx=10, pady=0, sticky="e"
             )
 
             ctk.CTkLabel(trans_frame, text=f"{amount:.2f}", text_color=amount_color).grid(
-                row=0, column=3, padx=10, pady=0, sticky="w"
+                row=0, column=3, padx=10, pady=0, sticky="e"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
-                row=0, column=4, padx=10, pady=0, sticky="w"
+                row=0, column=4, padx=10, pady=0, sticky="ew"
             )
 
             action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
