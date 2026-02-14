@@ -126,7 +126,7 @@ class TransactionForm(ctk.CTkFrame):
     
     def clear_form(self):
         self.date_entry.delete(0, 'end')
-        self.date_entry.insert(0, datetime.now().strftime("%m-%d-Y"))
+        self.date_entry.insert(0, datetime.now().strftime("%m-%d-%Y"))
         self.cat_entry.delete(0, 'end')
         self.desc_entry.delete(0, 'end')
         self.amount_entry.delete(0, 'end')
@@ -149,7 +149,7 @@ class TransactionDisplay(ctk.CTkFrame):
         self.summary_frame.grid_columnconfigure((0,1, 2), weight=1)
 
         self.total_income_label = ctk.CTkLabel(
-            self,
+            self.summary_frame,
             text="Total Income: $0.00",
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color="green"
@@ -157,7 +157,7 @@ class TransactionDisplay(ctk.CTkFrame):
         self.total_income_label.grid(row=0, column=0, padx=10, pady=10)
 
         self.total_expense_label = ctk.CTkLabel(
-            self,
+            self.summary_frame,
             text="Total Expense: $0.00",
             font=ctk.CTkFont(size=14, weight="bold"),
             text_color="red"
@@ -189,7 +189,7 @@ class TransactionDisplay(ctk.CTkFrame):
                 text=header,
                 font=ctk.CTkFont(size=13, weight="bold")
             )
-            label.grid(row=0, column=1, padx=10, pady=10, sticky="w")
+            label.grid(row=0, column=i, padx=10, pady=10, sticky="w")
 
     def update_transactions(self, transactions):
         for widget in self.scrollable_frame.winfo_children():
@@ -227,9 +227,9 @@ class TransactionDisplay(ctk.CTkFrame):
                 row=0, column=4, padx=10, pady=0, sticky="w"
             )
 
-    def update_summary(self, total_expense, total_income, balance):
+    def update_summary(self, total_income, total_expense, balance):
         self.total_income_label.configure(text=f"Total Income: ${total_income:.2f}")
-        self.total_expense_label.configure(text=f"Total Income: ${total_expense:.2f}")
+        self.total_expense_label.configure(text=f"Total Expense: ${total_expense:.2f}")
         self.balance_label.configure(
             text=f"Total Balance: ${balance:.2f}",
             text_color="green" if balance >=0 else "red"
