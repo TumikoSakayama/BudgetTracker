@@ -186,7 +186,7 @@ class TransactionDisplay(ctk.CTkFrame):
 
         headers = ['Date', 'Category', 'Description', 'Amount', 'Type']
         for i, header in enumerate(headers):
-            if headers != "Actions":
+            if header != "Actions":
                 btn = ctk.CTkButton(
                     header_frame,
                     text=header,
@@ -213,7 +213,7 @@ class TransactionDisplay(ctk.CTkFrame):
                 fg_color="gray30" if i % 2 == 0 else "gray20"
             )
             trans_frame.grid(row=i, column=0, sticky="ew", padx=5, pady=2)
-            trans_frame.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
+            trans_frame.grid_columnconfigure((0, 1, 2, 3, 4, 5), weight=1)
 
             amount = float(transaction['Amount'])
             amount_color = "green" if transaction['Type'] == 'Income' else "red"
@@ -247,15 +247,17 @@ class TransactionDisplay(ctk.CTkFrame):
                 width=50,
                 command= lambda t=transaction: self.edit_transaction(t)
             )
+            edit_btn.pack(side="left", padx=5)
 
             del_btn = ctk.CTkButton(
                 action_frame,
                 text="Delete",
                 width=60,
-                color="darkred",
+                fg_color="darkred",
                 hover_color="red",
                 command= lambda t=transaction: self.delete_transaction(t)
             )
+            del_btn.pack(side="left")
 
     def update_summary(self, total_income, total_expense, balance):
         self.total_income_label.configure(text=f"Total Income: ${total_income:.2f}")
@@ -293,11 +295,11 @@ class TransactionDisplay(ctk.CTkFrame):
 
     def delete_transaction(self, transaction):
         file_handler = self.master.master.file_handler
-        file_handler.transaction.remove(transaction)
+        file_handler.transactions.remove(transaction)
         self.update_transactions(file_handler.get_transactions())
 
         total_income, total_expense, balance = file_handler.calculate_totals()
-        self.update_transactions(total_income, total_expense, balance)
+        self.update_summary(total_income, total_expense, balance)
 
     def edit_transaction(self, transaction):
         form = self.master.master.form
@@ -309,7 +311,7 @@ class TransactionDisplay(ctk.CTkFrame):
         form.cat_entry.insert(0, transaction["Category"])
 
         form.desc_entry.delete(0, "end")
-        form.desc_entry.index(0, transaction["Description"])
+        form.desc_entry.insert(0, transaction["Description"])
 
         form.amount_entry.delete(0, "end")
         form.amount_entry.insert(0, transaction["Amount"])
