@@ -249,7 +249,7 @@ class TransactionDisplay(ctk.CTkFrame):
             )
 
             ctk.CTkLabel(trans_frame, text=f"{amount:,.2f}", text_color=amount_color).grid(
-                row=0, column=3, padx=10, pady=0, sticky="e"
+                row=0, column=3, padx=(0, 15), pady=0, sticky="ne"
             )
 
             ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
