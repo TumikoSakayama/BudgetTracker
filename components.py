@@ -176,19 +176,28 @@ class TransactionDisplay(ctk.CTkFrame):
         self.header_frame.grid_columnconfigure(3, weight=1)
         self.header_frame.grid_columnconfigure(5, weight=0, minsize=100)
 
-        self.date_btn = ctk.CTkButton(self.header_frame, text="Date", command=lambda: self.sort_by("Date"))
+        header_style = {
+            "fg_color": "transparent",
+            "text_color": "gray70",
+            "hover_color": "gray25",
+            "font": ctk.CTkFont(size=12, weight="bold"),
+            "anchor": "w",
+            "height": 20
+        }
+
+        self.date_btn = ctk.CTkButton(self.header_frame, text="Date", command=lambda: self.sort_by("Date"), **header_style)
         self.date_btn.grid(row=0, column=0, sticky="ew", padx=5)
 
-        self.cat_btn = ctk.CTkButton(self.header_frame, text="Category", command=lambda: self.sort_by("Category"))
+        self.cat_btn = ctk.CTkButton(self.header_frame, text="Category", command=lambda: self.sort_by("Category"), **header_style)
         self.cat_btn.grid(row=0, column=1, sticky="ew", padx=5)
 
-        self.desc_btn = ctk.CTkButton(self.header_frame, text="Description", command=lambda: self.sort_by("Description"))
+        self.desc_btn = ctk.CTkButton(self.header_frame, text="Description", command=lambda: self.sort_by("Description"), **header_style)
         self.desc_btn.grid(row=0, column=2, sticky="ew", padx=5)
 
-        self.amount_btn = ctk.CTkButton(self.header_frame, text="Amount", command=lambda: self.sort_by("Amount"))
+        self.amount_btn = ctk.CTkButton(self.header_frame, text="Amount", command=lambda: self.sort_by("Amount"), **header_style)
         self.amount_btn.grid(row=0, column=3, sticky="ew", padx=(5, 30))
 
-        self.type_btn = ctk.CTkButton(self.header_frame, text="Type", command=lambda: self.sort_by("Type"))
+        self.type_btn = ctk.CTkButton(self.header_frame, text="Type", command=lambda: self.sort_by("Type"), **header_style)
         self.type_btn.grid(row=0, column=4, sticky="ew", padx=5)
 
         self.scrollable_frame = ctk.CTkScrollableFrame(self)
