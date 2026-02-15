@@ -6,7 +6,6 @@ class Sidebar(ctk.CTkFrame):
         super().__init__(master, width=200, corner_radius=0)
         self.callbacks = callbacks
         self.grid_rowconfigure(6, weight=1)
-
         self.create_widgets()
 
     def create_widgets(self):
@@ -63,10 +62,8 @@ class Sidebar(ctk.CTkFrame):
 class TransactionForm(ctk.CTkFrame):
     def __init__(self, master, add_callback):
         super().__init__(master)
-
         self.add_callback = add_callback
         self.grid_columnconfigure((0, 1, 2, 3, 4), weight=1)
-
         self.create_widgets()
 
     def create_widgets(self):
@@ -78,7 +75,7 @@ class TransactionForm(ctk.CTkFrame):
         self.form_title.grid(row=0, column=0, columnspan=5, pady=10)
 
         ctk.CTkLabel(self, text="Date").grid(row=1, column=0, padx=5, pady=5, sticky="e")
-        self.date_entry = ctk.CTkEntry(self, placeholder_text='MM-DD-YYYYY')
+        self.date_entry = ctk.CTkEntry(self, placeholder_text='MM-DD-YYYY')
         self.date_entry.grid(row=1, column=1, padx=5, pady=5, sticky="ew")
         self.date_entry.insert(0, datetime.now().strftime("%m-%d-%Y"))
 
@@ -139,14 +136,12 @@ class TransactionDisplay(ctk.CTkFrame):
         super().__init__(master)
         self.sort_column = None
         self.sort_reverse = False
-
         self.grid_columnconfigure(0, weight=1)
-        self.grid_rowconfigure(1, weight=1)
-
+        self.grid_rowconfigure(2, weight=1)
         self.create_widgets()
 
     def create_widgets(self):
-        self.summary_frame =ctk.CTkFrame(self)
+        self.summary_frame = ctk.CTkFrame(self)
         self.summary_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
         self.summary_frame.grid_columnconfigure((0,1, 2), weight=1)
 
@@ -173,111 +168,70 @@ class TransactionDisplay(ctk.CTkFrame):
         )
         self.balance_label.grid(row=0, column=2, padx=10, pady=10)
 
+        self.header_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.header_frame.grid(row=1, column=0, sticky="ew", padx=10, pady=(10, 0))
+
+        self.header_frame.grid_columnconfigure((0, 1, 4), weight=1)
+        self.header_frame.grid_columnconfigure(2, weight=2)
+        self.header_frame.grid_columnconfigure(3, weight=1)
+        self.header_frame.grid_columnconfigure(5, weight=0, minsize=100)
+
+        self.date_btn = ctk.CTkButton(self.header_frame, text="Date", command=lambda: self.sort_by("Date"))
+        self.date_btn.grid(row=0, column=0, sticky="ew", padx=5)
+
+        self.cat_btn = ctk.CTkButton(self.header_frame, text="Category", command=lambda: self.sort_by("Category"))
+        self.cat_btn.grid(row=0, column=1, sticky="ew", padx=5)
+
+        self.desc_btn = ctk.CTkButton(self.header_frame, text="Description", command=lambda: self.sort_by("Description"))
+        self.desc_btn.grid(row=0, column=2, sticky="ew", padx=5)
+
+        self.amount_btn = ctk.CTkButton(self.header_frame, text="Amount", command=lambda: self.sort_by("Amount"))
+        self.amount_btn.grid(row=0, column=3, sticky="ew", padx=(5, 30))
+
+        self.type_btn = ctk.CTkButton(self.header_frame, text="Type", command=lambda: self.sort_by("Type"))
+        self.type_btn.grid(row=0, column=4, sticky="ew", padx=5)
+
         self.scrollable_frame = ctk.CTkScrollableFrame(self)
-        self.scrollable_frame.grid(row=1, column=0, sticky="nsew", padx=10, pady=10)
+        self.scrollable_frame.grid(row=2, column=0, sticky="nsew", padx=10, pady=10)
         self.scrollable_frame.grid_columnconfigure(0, weight=1)
-
-        self.create_header()
-
-    def create_header(self):
-        header_frame = ctk.CTkFrame(self.scrollable_frame, fg_color="gray25")
-        header_frame.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
-        header_frame.grid_columnconfigure(0, weight=1)
-        header_frame.grid_columnconfigure(1, weight=1)
-        header_frame.grid_columnconfigure(2, weight=2)
-        header_frame.grid_columnconfigure(3, weight=0, minsize=120)
-        header_frame.grid_columnconfigure(4, weight=0, minsize=100)
-        header_frame.grid_columnconfigure(5, weight=0, minsize=120)
-
-        headers = ['Date', 'Category', 'Description', 'Amount', 'Type', 'Actions']
-        for i, header in enumerate(headers):
-            if header == "Amount":
-                sticky_value = "e"
-            elif header == "Type":
-                sticky_value = "nsew"
-            else:
-                sticky_value = "w"
-
-            if header != "Actions":
-                btn = ctk.CTkButton(
-                    header_frame,
-                    text=header,
-                    fg_color="transparent",
-                    hover=False,
-                    command= lambda h=header: self.sort_columns(h)
-                )
-                btn.grid(row=0, column=i, padx=10, pady=10, sticky=sticky_value)
-            else:
-                ctk.CTkLabel(
-                    header_frame,
-                    text=header,
-                    font=ctk.CTkFont(size=13, weight="bold")
-                ).grid(row=0, column=i, padx=10, pady=10, sticky="w")
 
     def update_transactions(self, transactions):
         for widget in self.scrollable_frame.winfo_children():
-            if widget.cget("fg_color") != "gray25":
-                widget.destroy()
+            widget.destroy()
 
-        for i, transaction in enumerate(transactions, start=1):
-            trans_frame =ctk.CTkFrame(
+        for i, transaction in enumerate(transactions, start=0):
+            trans_frame = ctk.CTkFrame(
                 self.scrollable_frame,
                 fg_color="gray30" if i % 2 == 0 else "gray20"
             )
             trans_frame.grid(row=i, column=0, sticky="ew", padx=5, pady=2)
-            for col in range(6):
-                trans_frame.grid_columnconfigure(0, weight=1)
-                trans_frame.grid_columnconfigure(1, weight=1)
-                trans_frame.grid_columnconfigure(2, weight=3)
-                trans_frame.grid_columnconfigure(3, weight=0, minsize=120)
-                trans_frame.grid_columnconfigure(4, weight=0, minsize=100)
-                trans_frame.grid_columnconfigure(5, weight=0, minsize=120)
+
+            trans_frame.grid_columnconfigure((0, 1, 4), weight=1)
+            trans_frame.grid_columnconfigure(2, weight=2) 
+            trans_frame.grid_columnconfigure(3, weight=1)
+            trans_frame.grid_columnconfigure(5, weight=0, minsize=100)
 
             amount = float(transaction['Amount'])
             amount_color = "green" if transaction['Type'] == 'Income' else "red"
 
-            ctk.CTkLabel(trans_frame, text=transaction['Date']).grid(
-                row=0, column=0, padx=10, pady=0, sticky="w"
-            )
-
-            ctk.CTkLabel(trans_frame, text=transaction['Category']).grid(
-                row=0, column=1, padx=10, pady=0, sticky="w"
-            )
-
-            ctk.CTkLabel(trans_frame, text=transaction['Description']).grid(
-                row=0, column=2, padx=10, pady=0, sticky="ew"
-            )
-
-            ctk.CTkLabel(trans_frame, text=f"{amount:,.2f}", text_color=amount_color).grid(
-                row=0, column=3, padx=10, pady=0, sticky="e"
-            )
-
-            ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(
-                row=0, column=4, padx=10, pady=0, sticky="w"
-            )
+            ctk.CTkLabel(trans_frame, text=transaction['Date']).grid(row=0, column=0, padx=10, sticky="w")
+            ctk.CTkLabel(trans_frame, text=transaction['Category']).grid(row=0, column=1, padx=10, sticky="w")
+            ctk.CTkLabel(trans_frame, text=transaction['Description']).grid(row=0, column=2, padx=10, sticky="ew")
+            ctk.CTkLabel(trans_frame, text=f"{amount:,.2f}", text_color=amount_color).grid(row=0, column=3, padx=(10, 40), sticky="e")
+            ctk.CTkLabel(trans_frame, text=transaction['Type']).grid(row=0, column=4, padx=10, sticky="w")
 
             action_frame = ctk.CTkFrame(trans_frame, fg_color="transparent")
             action_frame.grid(row=0, column=5, sticky="nsew")
 
             edit_btn = ctk.CTkButton(
-                action_frame,
-                text="✏",
-                width=30,
-                height=28,
-                fg_color="transparent",
-                hover_color="gray35",
-                command= lambda t=transaction: self.edit_transaction(t)
+                action_frame, text="✏", width=30, height=28, fg_color="transparent",
+                hover_color="gray35", command= lambda t=transaction: self.edit_transaction(t)
             )
             edit_btn.pack(side="left", padx=5)
 
             del_btn = ctk.CTkButton(
-                action_frame,
-                text="🗑",
-                width=30,
-                height=28,
-                fg_color="transparent",
-                hover_color="#8B0000",
-                command= lambda t=transaction: self.delete_transaction(t)
+                action_frame, text="🗑", width=30, height=28, fg_color="transparent",
+                hover_color="#8B0000", command= lambda t=transaction: self.delete_transaction(t)
             )
             del_btn.pack(side="left")
 
@@ -289,55 +243,42 @@ class TransactionDisplay(ctk.CTkFrame):
             text_color="green" if balance >=0 else "red"
         )
 
-    def sort_columns(self, column):
-        if self.sort_column == column:
-            self.sort_reverse = not self.sort_reverse
-        else:
-            self.sort_reverse = False
-
-        self.sort_column = column
-
-        try:
-            if column == "Amount":
-                self.master.master.file_handler.transactions.sort(
-                    key=lambda x: float(x[column]),
-                    reverse = self.sort_reverse
-                )
-            else:
-                self.master.master.file_handler.transactions.sort(
-                    key= lambda x: x[column],
-                    reverse = self.sort_reverse
-                )
-        except Exception:
-            pass
-
-        self.update_transactions(
-            self.master.master.file_handler.get_transactions()
-        )
-
     def delete_transaction(self, transaction):
         file_handler = self.master.master.file_handler
         file_handler.transactions.remove(transaction)
         self.update_transactions(file_handler.get_transactions())
-
         total_income, total_expense, balance = file_handler.calculate_totals()
         self.update_summary(total_income, total_expense, balance)
 
     def edit_transaction(self, transaction):
         form = self.master.master.form
-
         form.date_entry.delete(0, "end")
         form.date_entry.insert(0, transaction["Date"])
-
         form.cat_entry.delete(0, "end")
         form.cat_entry.insert(0, transaction["Category"])
-
         form.desc_entry.delete(0, "end")
         form.desc_entry.insert(0, transaction["Description"])
-
         form.amount_entry.delete(0, "end")
         form.amount_entry.insert(0, transaction["Amount"])
-
         form.type_var.set(transaction["Type"])
-
         self.delete_transaction(transaction)
+
+    def sort_by(self, column):
+        self.sort_reverse = not self.sort_reverse
+        self.date_btn.configure(text=f"Date {'↓' if self.sort_reverse else '↑'}" if column == "Date" else "Date")
+        self.cat_btn.configure(text=f"Category {'↓' if self.sort_reverse else '↑'}" if column == "Category" else "Category")
+        self.desc_btn.configure(text=f"Description {'↓' if self.sort_reverse else '↑'}" if column == "Description" else "Description")
+        self.amount_btn.configure(text=f"Amount {'↓' if self.sort_reverse else '↑'}" if column == "Amount" else "Amount")
+        self.type_btn.configure(text=f"Type {'↓' if self.sort_reverse else '↑'}" if column == "Type" else "Type")
+
+        try:
+            if column == "Amount":
+                key_func = lambda x: float(x[column])
+            else:
+                key_func = lambda x: x[column].lower()
+            
+            self.master.master.file_handler.transactions.sort(key=key_func, reverse=self.sort_reverse)
+        except: 
+            pass
+        
+        self.update_transactions(self.master.master.file_handler.get_transactions())
